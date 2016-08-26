@@ -1,0 +1,241 @@
+finish.m
+dir = 'C:\Users\Giridhar A D\Documents\AI\CNS\Gen\Softwares\eeglab13_4_4b\data\Subject data\plots\finished\results\';
+div = 0.5;%divide as 0.5 seconds
+freq = 250;%250Hz
+Cz = [1 2 3 4 5 6];%C3 C4 FC3 FC4 CP3 CP4
+FCz = [10 11 12 13 14 15];%C3 C4 FC3 FC4 CP3 CP4
+Chn = Cz;
+base = 3;
+power_offset = 50;
+    result = zeros(200,(8*(1/div)*6));%dividing 8 seconds as 0.5 into 16 pieces//6->channels
+    RP_1 = zeros(40,6);
+    LP_1 = zeros(40,6);
+    RO_1 = zeros(40,6);
+    LO_1 = zeros(40,6);
+    RI_1 = zeros(40,6);
+    LI_1 = zeros(40,6);
+    E1_1 = zeros(40,6);
+    E2_1 = zeros(40,6);
+    E3_1 = zeros(40,6);
+    E4_1 = zeros(40,6);
+%eval(sprintf('result_%d = zeros();',i));
+for i=1:20
+%eval(['result_' num2str(i) '= zeros(150,(8*(1/div)*6));'])
+    result_temp = zeros(150,(8*(1/div)*6));
+eval(['A = power(A' num2str(i) '_bp(Chn,:),2);']);
+eval(['t1 = t1_' num2str(i) ';']);
+eval(['t2 = t2_' num2str(i) ';']);
+y = zeros(15*6*6,7*freq);
+    for p = 1:6
+        for t = 1:15
+        y((p-1)*15*6 + (t-1)*6 + 1:(p-1)*15*6 + (t-1)*6 + 1 + 5,:) = [A(:,t1(t,p):t1(t,p)+749) A(:,t1(t,p+7):t1(t,p+7)+999)];
+        %for ch = 1:6
+        %avg_power = sum(A(ch,1:750))/750;
+            %for time=1:(freq*div):size(y)
+            %log((sum(y(1,time:time+124))/125)/(sum(y(1,1:750))/750))
+            %end
+        %end    
+        end
+    end
+y_avg1 = zeros(15*6*6,7/div);
+y_power1 = zeros(15*6*6,7/div);
+    %{
+    for j = 1:90*6
+    y_temp = sum(y(j,1:(250*div)))/(freq*div);
+    for time=1+(freq*div):(freq*div):1750
+    y_temp = [y_temp sum(y(j,time:time+(freq*div)-1))/(freq*div)];
+    end
+    y_avg(j,:) = y_temp;
+    end
+    %}   
+    %{
+    for t=1:(freq*div):1750
+    y_avg(:,1+((t-1)/(freq*div))) = (sum(y(:,t:t+124)'))/(freq*div);
+    end
+    %}
+temp_range = 1:freq*div:7*freq;
+for j=1:(7/div)
+y_avg1(:,j) = mean(y(:,temp_range(j):temp_range(j)+freq*div -1),2);
+end
+for j=1:15*6*6
+y_power1(j,:) = power_offset + log10(y_avg1(j,:)/mean(y_avg1(j,1:(base/div))))*100;
+end
+y_power1 = [y_power1 zeros(15*6*6,1/div)];
+
+    %{
+    C3=1:2:6;
+    for j=1:6:90
+    i=((j-1)/6 +1)*2  -1;
+    subplot(15,2,i)
+    stem(mean(y_power(j+C3-1,:)))
+    subplot(15,2,i+1)
+    stem(mean(y_power(j+C3,:)))
+    end
+    %}
+
+y = zeros(10*2*6,8*freq);
+for p = 1:2
+for t = 1:10
+y((p-1)*10*6 + (t-1)*6 + 1:(p-1)*10*6 + (t-1)*6 + 1 + 5,:) = power([A(:,t2(t,p):t2(t,p)+749) A(:,t2(t,p+5):t2(t,p+5)+1249)],2);
+end
+end
+
+y_avg2 = zeros(10*2*6,8/div);
+y_power2 = zeros(10*2*6,8/div);
+
+temp_range = 1:freq*div:8*freq;
+for j=1:(8/div)
+y_avg2(:,j) = mean(y(:,temp_range(j):temp_range(j)+freq*div -1),2);
+end
+for j=1:10*2*6
+y_power2(j,:) = power_offset + log10(y_avg2(j,:)/mean(y_avg2(j,1:(base/div))))*100;
+end
+%y_power2 = [y_power2 zeros(10*2*6,1/div)];
+
+for p = 3:4
+for t = 1:20
+y((p-1-2)*20*6 + (t-1)*6 + 1:(p-1-2)*20*6 + (t-1)*6 + 1 + 5,:) = power([A(:,t2(t,p):t2(t,p)+749) A(:,t2(t,p+5):t2(t,p+5)+1249)],2);
+end
+end
+
+y_avg3 = zeros(20*2*6,8/div);
+y_power3 = zeros(20*2*6,8/div);
+
+temp_range = 1:freq*div:8*freq;
+for j=1:(8/div)
+y_avg3(:,j) = mean(y(:,temp_range(j):temp_range(j)+freq*div -1),2);
+end
+for j=1:20*2*6
+y_power3(j,:) = power_offset + log10(y_avg3(j,:)/mean(y_avg3(j,1:(base/div))))*100;
+end
+%y_power3 = [y_power3 zeros(20*2*6,1/div)];
+RP = 1:15;
+LP = 16:30;
+RO = 31:45;
+LO = 46:60;
+RI = 61:75;
+LI = 76:90;
+E1 = 91:100;
+E2 = 101:110;
+E3 = 111:130;
+E4 = 131:150;
+C3 = 1:6:540+120+240;
+
+y_power = [
+    y_power1;
+    y_power2;
+    y_power3;
+    zeros(1,8/div)
+    ];
+y_power = [
+    y_power;
+    mean(y_power(C3(RP),:));
+    mean(y_power(C3(LP),:));
+    mean(y_power(C3(RO),:));
+    mean(y_power(C3(LO),:));
+    mean(y_power(C3(RI),:));
+    mean(y_power(C3(LI),:));
+    mean(y_power(C3(E1),:));
+    mean(y_power(C3(E2),:));
+    mean(y_power(C3(E3),:));
+    mean(y_power(C3(E4),:));
+    zeros(1,8/div);
+    mean(y_power(C3(RP)+1,:));
+    mean(y_power(C3(LP)+1,:));
+    mean(y_power(C3(RO)+1,:));
+    mean(y_power(C3(LO)+1,:));
+    mean(y_power(C3(RI)+1,:));
+    mean(y_power(C3(LI)+1,:));
+    mean(y_power(C3(E1)+1,:));
+    mean(y_power(C3(E2)+1,:));
+    mean(y_power(C3(E3)+1,:));
+    mean(y_power(C3(E4)+1,:));
+    zeros(1,8/div);
+    mean(y_power(C3(RP)+2,:));
+    mean(y_power(C3(LP)+2,:));
+    mean(y_power(C3(RO)+2,:));
+    mean(y_power(C3(LO)+2,:));
+    mean(y_power(C3(RI)+2,:));
+    mean(y_power(C3(LI)+2,:));
+    mean(y_power(C3(E1)+2,:));
+    mean(y_power(C3(E2)+2,:));
+    mean(y_power(C3(E3)+2,:));
+    mean(y_power(C3(E4)+2,:));
+    zeros(1,8/div);
+    mean(y_power(C3(RP)+3,:));
+    mean(y_power(C3(LP)+3,:));
+    mean(y_power(C3(RO)+3,:));
+    mean(y_power(C3(LO)+3,:));
+    mean(y_power(C3(RI)+3,:));
+    mean(y_power(C3(LI)+3,:));
+    mean(y_power(C3(E1)+3,:));
+    mean(y_power(C3(E2)+3,:));
+    mean(y_power(C3(E3)+3,:));
+    mean(y_power(C3(E4)+3,:));
+    zeros(1,8/div);
+    mean(y_power(C3(RP)+4,:));
+    mean(y_power(C3(LP)+4,:));
+    mean(y_power(C3(RO)+4,:));
+    mean(y_power(C3(LO)+4,:));
+    mean(y_power(C3(RI)+4,:));
+    mean(y_power(C3(LI)+4,:));
+    mean(y_power(C3(E1)+4,:));
+    mean(y_power(C3(E2)+4,:));
+    mean(y_power(C3(E3)+4,:));
+    mean(y_power(C3(E4)+4,:));
+    zeros(1,8/div);
+    mean(y_power(C3(RP)+5,:));
+    mean(y_power(C3(LP)+5,:));
+    mean(y_power(C3(RO)+5,:));
+    mean(y_power(C3(LO)+5,:));
+    mean(y_power(C3(RI)+5,:));
+    mean(y_power(C3(LI)+5,:));
+    mean(y_power(C3(E1)+5,:));
+    mean(y_power(C3(E2)+5,:));
+    mean(y_power(C3(E3)+5,:));
+    mean(y_power(C3(E4)+5,:));
+    %zeros(1,8/div);
+    ];
+%{
+    for extra = 902:966
+    if mod(extra,11)<6
+        y_power(extra,1:end-2) = y_power(extra,1:end-2) - ((max(y_power(extra,1:end-2))+min(y_power(extra,1:end-2)))/2);
+    else
+        y_power(extra,:) = y_power(extra,:) - ((max(y_power(extra,:))+min(y_power(extra,:)))/2);
+    end
+    end
+    %}
+    foc = 908:11:966;
+    RP_1(i,:) = y_power(foc-6,7)';
+    LP_1(i,:) = y_power(foc-5,7)';
+    RO_1(i,:) = y_power(foc-4,7)';
+    LO_1(i,:) = y_power(foc-3,7)';
+    RI_1(i,:) = y_power(foc-2,7)';
+    LI_1(i,:) = y_power(foc-1,7)';
+    E1_1(i,:) = y_power(foc,7)';
+    E2_1(i,:) = y_power(foc+1,7)';
+    E3_1(i,:) = y_power(foc+2,7)';
+    E4_1(i,:) = y_power(foc+3,7)';
+    
+    RP_1(i+20,:) = y_power(foc-6,8)';
+    LP_1(i+20,:) = y_power(foc-5,8)';
+    RO_1(i+20,:) = y_power(foc-4,8)';
+    LO_1(i+20,:) = y_power(foc-3,8)';
+    RI_1(i+20,:) = y_power(foc-2,8)';
+    LI_1(i+20,:) = y_power(foc-1,8)';
+    E1_1(i+20,:) = y_power(foc,8)';
+    E2_1(i+20,:) = y_power(foc+1,8)';
+    E3_1(i+20,:) = y_power(foc+2,8)';
+    E4_1(i+20,:) = y_power(foc+3,8)';
+%csvwrite(strcat(dir,'results',num2str(i),'.csv'),y_power);
+
+end
+y = [[1:20 1:20]' RP_1 zeros(40,1) LP_1 zeros(40,1) RO_1 zeros(40,1) LO_1 zeros(40,1) RI_1 zeros(40,1) LI_1 zeros(40,1) E1_1 zeros(40,1) E2_1 zeros(40,1) E3_1 zeros(40,1) E4_1 zeros(40,1)];
+%csvwrite(strcat(dir,'result.csv'), y);
+clearvars A Chn Cz dir div FCz freq i j p result result_temp t t1 t2 temp_range y y_avg1 y_power1 y_avg2 y_power2 y_avg3 y_power3 y_power RP LP RO LO RI LI E1 E2 E3 E4 C3 foc E1_1 E2_1 E3_1 E4_1 LI_1 LO_1 LP_1 power_offset RI_1 RO_1 RP_1 base
+%%%%%%%%%%%%%%
+%temp_var = zeros(540,14);
+%for time=1:(7/div)
+%y_ = sum(y(:,time:time+124)');
+%temp_var(:,1)
+%end
