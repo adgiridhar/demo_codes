@@ -1,3 +1,79 @@
+//cpp
+#include<iostream.h>
+#include<conio.h>
+float y=0, y_in=0;
+float init_W=0;
+float init_B=0;
+float alpha=1;
+float threshold=1;
+int flag=0;
+int zero=0;
+int zero_=-1;
+float s[10][7]=	{
+		{1,1,1,1,1,1,zero},//0
+		{zero,1,1,zero,zero,zero,zero},//1
+		{1,1,zero,1,1,zero,1},//2
+		{1,1,1,1,zero,zero,1},//3
+		{zero,1,1,zero,zero,1,1},//4
+		{1,zero,1,1,zero,1,1},//5
+		{1,zero,1,1,1,1,1},//6
+		{1,1,1,zero,zero,zero,zero},//7
+		{1,1,1,1,1,1,1},//8
+		{1,1,1,zero,zero,1,1}//9
+		};
+float t[10]={zero_,zero_,zero_,zero_,zero_,zero_,zero_,zero_,1,1};//8
+//float t[10]={zero_,zero_,zero_,zero_,1,1,1,1,zero_,zero_};//4
+//float t[10]={zero_,zero_,1,1,zero_,zero_,1,1,zero_,zero_};//2
+//float t[10]={zero_,1,zero_,1,zero_,1,zero_,1,zero_,1};//1
+int temp[7]={0,0,0,0,0,0,0};
+float w[7]={init_W,init_W,init_W,init_W,init_W,init_W,init_W};
+float b=init_B;
+float sum(int[]);
+float out(float);
+void main()
+{
+clrscr();
+float sigma=0,i=0,j=0,count=0;
+while(!flag&&count<1000)
+	{
+	flag=1;
+	count++;
+	for(i=0;i<10;i++)
+		{
+		y_in=0;
+		y=0;
+		sigma=0;
+		for(j=0;j<7;j++)
+			sigma+=s[i][j]*w[j];
+		y_in = b+sigma;
+		y = out(y_in);
+		cout<<endl<<count<<" "<<i<<" "<<j<<" "<<y_in<<" "<<y<<":"<<t[i];
+		if(y!=t[i])
+			{
+			flag=0;
+			for(j=0;j<7;j++)
+				w[j]+=(alpha*(t[i])*s[i][j]);
+			b+=(alpha*(t[i]));
+			}
+		}
+	}
+cout<<endl<<count<<endl<<b<<endl;
+for(i=0;i<7;i++)cout<<w[i]<<" ";
+getch();
+}
+float sum(int m[7])
+{
+int temp=0;
+for(int i=0; i<7; i++) temp+=m[i];
+return temp;
+}
+float out(float yin)
+{
+if(yin>=threshold) return 1;
+else if((yin>(-1*threshold))&&(yin<threshold)) return 0;
+else return -1;
+}
+//arduino
 int one = 7;
 int two = 8;
 int three = 9;
